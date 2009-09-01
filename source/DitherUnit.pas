@@ -95,47 +95,10 @@ interface
 //
 ////////////////////////////////////////////////////////////////////////////////
 uses
-  SysUtils,
+  sysutils,
   Windows,
   Graphics,
   Classes;
-
-function GetBitmap(Source: TPersistent): TBitmap;  {LDB}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-//
-//			Implementation
-//
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-implementation
-
-uses
-{$ifdef DEBUG}
-  dialogs,
-{$endif}
-//BG, 01.09.2009: ifdef added:
-{$ifdef DEBUG_DITHERPERFORMANCE}
-  mmsystem, // timeGetTime()
-  messages,
-{$endif}  
-  htmlun2;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//                      Error messages
-//
-////////////////////////////////////////////////////////////////////////////////
-resourcestring
-  // GIF Error messages
-  //BG, 01.09.2009: unused: sOutOfData		= 'Premature end of data';
-  sOutOfMemDIB		= 'Failed to allocate memory for GIF DIB';
-  sDIBCreate		= 'Failed to create DIB from Bitmap';
-  sNoDIB		= 'Image has no DIB';
-  sInvalidBitmap        = 'Bitmap image is not valid';
-  SInvalidPixelFormat   = 'Invalid pixel format';
-  SScanLine = 'Scan line index out of range';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -167,16 +130,55 @@ type
 //                      Utility routines
 //
 ////////////////////////////////////////////////////////////////////////////////
-//  // WebPalette creates a 216 color uniform palette a.k.a. the Netscape Palette
-//  function WebPalette: HPalette;
+  // WebPalette creates a 216 color uniform palette a.k.a. the Netscape Palette
+  function WebPalette: HPalette;
+
+  // ReduceColors
+  // Map colors in a bitmap to their nearest representation in a palette using
+  // the methods specified by the ColorReduction and DitherMode parameters.
+  // The ReductionBits parameter specifies the desired number of colors (bits
+  // per pixel) when the reduction method is rmQuantize.
+  function ReduceColors(Bitmap: TBitmap; ColorReduction: TColorReduction;
+    DitherMode: TDitherMode): TBitmap;
+
+////////////////////////////////////////////////////////////////////////////////
 //
-//  // ReduceColors
-//  // Map colors in a bitmap to their nearest representation in a palette using
-//  // the methods specified by the ColorReduction and DitherMode parameters.
-//  // The ReductionBits parameter specifies the desired number of colors (bits
-//  // per pixel) when the reduction method is rmQuantize.
-//  function ReduceColors(Bitmap: TBitmap; ColorReduction: TColorReduction;
-//    DitherMode: TDitherMode): TBitmap;
+//                      Error messages
+//
+////////////////////////////////////////////////////////////////////////////////
+resourcestring
+  // GIF Error messages
+  sOutOfData		= 'Premature end of data';
+  sOutOfMemDIB		= 'Failed to allocate memory for GIF DIB';
+  sDIBCreate		= 'Failed to create DIB from Bitmap';
+  sNoDIB		= 'Image has no DIB';
+  sInvalidBitmap        = 'Bitmap image is not valid';  
+  SInvalidPixelFormat   = 'Invalid pixel format';      
+  SScanLine = 'Scan line index out of range';   
+
+function GetBitmap(Source: TPersistent): TBitmap;  {LDB}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//
+//			Implementation
+//
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+implementation
+
+uses
+{$ifdef DEBUG}
+  dialogs,
+{$endif}
+  mmsystem, // timeGetTime()
+  messages,
+  htmlun2;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//			Utilities
+//
+////////////////////////////////////////////////////////////////////////////////
 
 function WebPalette: HPalette;
 type

@@ -47,10 +47,10 @@ interface
 uses
   {$ifdef UseCLX}
     SysUtils, Types, Classes, QGraphics, QControls, QForms, QDialogs,
-    QStdCtrls, Math;
+    QStdCtrls;
   {$else}
     Windows, Messages, SysUtils, Classes, Graphics,
-    Controls, StdCtrls, ExtCtrls, Forms, Math;
+    Controls, StdCtrls, ExtCtrls, Forms;
   {$endif}
 
 type
@@ -354,10 +354,8 @@ type
 
 implementation
 
-{$IFDEF UNICODE}
 uses
-  AnsiStrings;
-{$ENDIF}
+  HtmlUn2 {$IFDEF UNICODE}, AnsiStrings{$ENDIF};
 
 const
   TransColor = $170725;
@@ -1938,7 +1936,7 @@ try
         TrIndex := GetTransparentIndex(i);
 
         N := 0;   {pixel index in rPixelList, the frame source pixels}
-        for Y := Height-1 downto Math.Max(Height-rHeight, ImageTop[I]) do
+        for Y := Height-1 downto IntMax(Height-rHeight, ImageTop[I]) do
           begin
           {find the start of each frame row in destination.  Note that the source
            frame may be smaller than the destination and positioned according to
@@ -2015,7 +2013,7 @@ try
        (although the next image will no doubt write on part of this area.}
       if IsTransparent and (ImageDisposal[i] in [2,3]) then   {dtToPrevious run as dtBackground as it seems other browsers do this}
         with id^ do
-          for Y := Height-1 downto Math.Max(Height-rHeight, ImageTop[I]) do
+          for Y := Height-1 downto IntMax(Height-rHeight, ImageTop[I]) do
             begin
             MP := PByte(PtrInt(MPix) + ((Y-ImageTop[i]) * FullWidth) + (i+1)*Width*3 +ImageLeft[i]*3);
             FillChar(MP^, rWidth*3, $FF);

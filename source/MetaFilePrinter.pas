@@ -62,9 +62,6 @@ type
       procedure   NewPage;  virtual;   
       procedure   EndDoc;
       procedure   Abort;
-//BG, 01.12.2006: beg of modification
-      procedure   getPrinterCapsOf(Printer: TPrinter);
-//BG, 01.12.2006: end of modification
 
       property    MetaFiles[I: integer]: TMetaFile read GetMetaFile;
       property    PixelsPerInchX: integer read FPPIX;
@@ -141,11 +138,13 @@ begin
    end;
 end;
 
-//BG, 01.12.2006: beg of modification: extracted getPrinterCapsOf from BeginDoc
-procedure TMetaFilePrinter.getPrinterCapsOf(Printer: TPrinter);
+procedure TMetaFilePrinter.BeginDoc;
 begin
    if Printer.Printers.Count = 0 then
       raise Exception.Create('Printer not available');
+
+   FPrinting := True;
+   FreeMetaFiles;
 
    FPrinterDC := Printer.Handle;
    FPPIX      := GetDeviceCaps(Printer.Handle, LOGPIXELSX);
@@ -156,18 +155,9 @@ begin
    FOffsetY   := GetDeviceCaps(Printer.Handle, PHYSICALOFFSETY);
    FPgHeight  := Printer.PageHeight;
    FPgWidth   := Printer.PageWidth;
-end;
-
-procedure TMetaFilePrinter.BeginDoc;
-begin
-   FPrinting := True;
-   FreeMetaFiles;
-
-   getPrinterCapsOf(Printer);
 
    NewPage;
 end;
-//BG, 01.12.2006: end of modification
 
 procedure TMetaFilePrinter.EndDoc;
 var
